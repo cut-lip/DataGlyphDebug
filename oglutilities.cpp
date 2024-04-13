@@ -8,6 +8,52 @@ bool HYPERBLOCKS_COLLECTED;
 std::vector< std::vector<GLfloat>> hyperblocks{};
 std::vector<std::string> hyperblockLabels{};
 
+/*
+isClose
+This function is a helper function for the isClose function.
+It is used to determine whether two given data points are within
+the given threshold of each other, and thus are in the same
+neighborhood.
+@param		vec1		the first data point to be compared
+            vec2		the second data point to be compared
+@return					boolean value, is vec2 within threshold
+                        of vec1
+*/
+bool isClose(std::vector<float>* vec1, std::vector<float>* vec2)
+{
+    // modified HyClu hypercube clustering algorithm. algorithm now forms Hyperblocks.
+    // Threshold value for attributes used in SPC shifts is MIN_THRESHOLD
+    // Threshold value for attributes allowed to expand is THRESHOLD
+
+    // Initialize iterators for vectors to be compared
+    std::vector<float>::iterator it1 = vec1->begin();
+    std::vector<float>::iterator it2 = vec2->begin();
+
+    int count = 0;
+    for (it1; it1 != vec1->end(); ++it1)
+    {
+        if (count == 0 || count == 1 || count == 2 || count == 5 || count == 6)
+        {
+            if (abs(*it1 - *it2) > MIN_THRESHOLD)
+            {
+                return false;
+            }
+        }
+        else if (count == 3 || count == 4 || count == 7 || count == 8)
+        {
+            if (abs(*it1 - *it2) > THRESHOLD_VALUE)
+            {
+                return false;
+            }
+        }
+
+        ++count;
+        ++it2;
+    }
+    // Return true if all attributes are within threshold
+    return true;
+}
+
 std::vector<bool> computeAllDistances(std::vector<GLfloat>* curr, std::vector<std::vector<GLfloat>>* data)
 {
     // This variable is for temp extracted data to compare
@@ -66,13 +112,13 @@ void mergerHyperblock(std::vector<std::vector<GLfloat>>* all_Data, std::vector<b
                 // Add class to class count
                 if (*classIt)
                 {
-                    ++ClassACount;
+                    ++classACount;
                     tempDataClassA.push_back(*dataIt);
                 }
                 else if (!*classIt)
                 {
                     ++classBCount;
-                    tempDataClassB.pushBack(*dataIt);
+                    tempDataClassB.push_back(*dataIt);
                 }
 
                 // Add point to temp vector
