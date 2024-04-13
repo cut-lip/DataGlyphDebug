@@ -27,11 +27,11 @@ std::vector<bool> computeAllDistances(std::vector<GLfloat>* curr, std::vector<st
     return close;
 }
 
-void mergerHyperblock(std::vector<std::vector<GLfloat>>* all_Data, std::vector<bool>* classify)
+void mergerHyperblock(std::vector<std::vector<GLfloat>>* all_Data, std::vector<bool>* dataClass)
 {
     // Initialize new vector copy of data
     std::vector<std::vector<GLfloat>> allData(*all_Data);
-    std::vector<bool> classifyCopy(*classify);
+    std::vector<bool> dataClassCopy(*dataClass);
     std::vector<bool> thresholds{};	// track hyperblock membership
 
     bool addThis = false;   // Initialize flag & class counters
@@ -50,7 +50,7 @@ void mergerHyperblock(std::vector<std::vector<GLfloat>>* all_Data, std::vector<b
 
         // Initialize vector iterators
         std::vector<std::vector<GLfloat>>::iterator dataIt = allData.begin();
-        std::vector<bool>::iterator classIt = classifyCopy.begin();
+        std::vector<bool>::iterator classIt = dataClassCopy.begin();
         std::vector<bool>::iterator threshIt = thresholds.begin();
 
         // Save first point in cluster for comparison
@@ -80,7 +80,7 @@ void mergerHyperblock(std::vector<std::vector<GLfloat>>* all_Data, std::vector<b
 
                 // Remove current point from vectors
                 dataIt = allData.erase(dataIt);
-                classIt = classifyCopy.erase(classIt);
+                classIt = dataClassCopy.erase(classIt);
                 threshIt = thresholds.erase(threshIt);
             }
             else
@@ -188,7 +188,7 @@ void drawGridSPC(GLfloat originX, GLfloat originY, GLfloat endX, GLfloat endY, i
 
 // IMPORT DATA
 // EDITING CODE TO add class label to data vector at 10th index
-int processData(QFile* dataFile, std::vector<std::vector<GLfloat>>* allData, std::vector<bool>* classify)
+int processData(QFile* dataFile, std::vector<std::vector<GLfloat>>* allData, std::vector<bool>* dataClass)
 {
     // Read data file
     std::string line = "";
@@ -221,16 +221,12 @@ int processData(QFile* dataFile, std::vector<std::vector<GLfloat>>* allData, std
 
         std::vector<GLfloat> data(dataInt.begin(), dataInt.end());
 
-        // Save class to classify vector
-        if (*--(data.end()) == 4) classify->push_back(false);
-        else					  classify->push_back(true);
+        // Save class to dataClass vector
+        if (*--(data.end()) == 4) dataClass->push_back(false);
+        else					  dataClass->push_back(true);
 
         // Remove labels from data
         data.erase(data.begin());
-
-        // Save Class Label Into Classify Vector
-        // 2 for positive, 4 for negative
-        // This must be standardized in a way which we didn't do before
         data.erase(--data.end());
 
         (*allData)[count] = data;

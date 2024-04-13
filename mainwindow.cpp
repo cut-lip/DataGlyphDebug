@@ -6,6 +6,7 @@ int DATA_SIZE = 683;
 //int NUM_COLS = 4;
 
 std::vector<std::vector<GLfloat>> allData(DATA_SIZE);
+std::vector<bool> dataClass(DATA_SIZE);
 
 // MainWindow constructor
 MainWindow::MainWindow(QWidget *parent)
@@ -163,10 +164,10 @@ void MainWindow::on_actionUpload_File_triggered()
     }
 
     //std::vector<std::vector<GLfloat>> allData(DATA_SIZE);
-    std::vector<bool> classify{};	//  vector containing class of data points
+    //std::vector<bool> classify{};	//  vector containing class of data points
 
     // Import data from csv file
-    processData(&dataFile, &allData, &classify);
+    processData(&dataFile, &allData, &dataClass);
 
     // Normalize data
     normalizeData(&allData);
@@ -180,7 +181,6 @@ void MainWindow::on_actionUpload_File_triggered()
     // Close data file
     dataFile.close();
 }
-
 
 void MainWindow::on_actionSet_width_and_height_triggered()
 {
@@ -225,16 +225,14 @@ void MainWindow::on_verticalSlider_valueChanged(int value)
 
 }
 
-
 void MainWindow::on_openGLWidget_aboutToCompose()
 {
 
 }
 
-
-//
 void MainWindow::on_hyperblock_button_clicked()
 {
     // Run Hyperblock Algorithm On allData
+    mergerHyperblock(&allData, &dataClass);
 }
 
