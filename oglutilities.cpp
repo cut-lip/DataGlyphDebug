@@ -221,6 +221,10 @@ int processData(QFile* dataFile, std::vector<std::vector<GLfloat>>* allData, std
 
         std::vector<GLfloat> data(dataInt.begin(), dataInt.end());
 
+        // Save class to classify vector
+        if (*--(data.end()) == 4) classify->push_back(false);
+        else					  classify->push_back(true);
+
         // Remove labels from data
         data.erase(data.begin());
 
