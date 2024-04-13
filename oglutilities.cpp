@@ -3,6 +3,8 @@
 //int DATA_SIZE = 683;
 int NUM_ROWS = 4;
 int NUM_COLUMNS = 4;
+float THRESHOLD_VALUE = 5.0;			/* threshold calculation value */
+float MIN_THRESHOLD =2.0;
 
 bool HYPERBLOCKS_COLLECTED;
 std::vector< std::vector<GLfloat>> hyperblocks{};
