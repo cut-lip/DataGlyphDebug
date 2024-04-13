@@ -1,0 +1,38 @@
+#ifndef OGLUTILITIES_H
+#define OGLUTILITIES_H
+
+#include <GL/glu.h>
+#include <vector>
+#include <string>
+#include <iostream>		/*  */
+#include <sstream>		/*  */
+#include <fstream>		/*  */
+#include <iomanip>
+#include <QFile>
+#include <QTextStream>
+#include <QString>
+#include <QStringList>
+
+#include <QOpenGLWidget>
+#include <QOpenGLFunctions>
+#include "point2.h"
+#include "vec2.h"
+
+
+
+// Import data from CVS file
+int processData(QFile* dataFile, std::vector<std::vector<GLfloat>>* allData, std::vector<bool>* classify);
+
+
+int normalizeData(std::vector<std::vector<GLfloat>>* data);
+
+// Draw a  4x5 tile grid
+void drawGrid(float width, float height);
+
+void drawArrow(Point2 start, Point2 end, const unsigned int winHeight);
+
+void drawGridSPC(GLfloat originX, GLfloat originY, GLfloat endX, GLfloat endY, int dimension);
+
+void mergerHyperblock(std::vector<std::vector<GLfloat>>* all_Data, std::vector<bool> *classify);
+
+#endif // OGLUTILITIES_H

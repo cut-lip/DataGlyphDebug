@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/data/wbc">
+        <file>breast-cancer-wisconsin.txt</file>
+    </qresource>
+</RCC>
