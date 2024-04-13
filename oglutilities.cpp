@@ -225,12 +225,13 @@ int processData(QFile* dataFile, std::vector<std::vector<GLfloat>>* allData, std
         data.erase(data.begin());
 
         // Save Class Label Into Classify Vector
+        // 2 for positive, 4 for negative
+        // This must be standardized in a way which we didn't do before
         data.erase(--data.end());
 
         (*allData)[count] = data;
         ++count;
     }
-
 }
 
 int normalizeData(std::vector<std::vector<GLfloat>> *allData)
