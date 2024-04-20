@@ -36,6 +36,6 @@ void mergerHyperblock(std::vector<std::vector<GLfloat>>* all_Data, std::vector<b
 
 std::vector<bool> computeAllDistances(std::vector<GLfloat>* curr, std::vector<std::vector<GLfloat>>* data);
 
-bool isClose(std::vector<float>* vec1, std::vector<float>* vec2)
+bool isClose(std::vector<float>* vec1, std::vector<float>* vec2);
 
 #endif // OGLUTILITIES_H

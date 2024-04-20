@@ -9,7 +9,7 @@ std::vector<std::vector<GLfloat>> allData(DATA_SIZE);
 std::vector<bool> dataClass(DATA_SIZE);
 
 // Declare the global variable defined in oglutilities.cpp
-extern std::vector<std::vector<GLfloat>> hyperblocks;
+//extern std::vector<std::vector<GLfloat>> hyperblocks;
 
 // MainWindow constructor
 MainWindow::MainWindow(QWidget *parent)
