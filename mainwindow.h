@@ -50,7 +50,7 @@ private slots:
 
     void on_hyperblock_button_clicked();
 
-    void on_pushButton_clicked();
+    //void on_pushButton_clicked();
 
 private:
     Ui::MainWindow *ui;

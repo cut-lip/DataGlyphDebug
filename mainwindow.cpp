@@ -230,9 +230,13 @@ void MainWindow::on_openGLWidget_aboutToCompose()
 
 }
 
-void MainWindow::on_hyperblock_button_clicked()
+std::vector<std::vector<GLfloat>> MainWindow::on_hyperblock_button_clicked()
 {
     // Run Hyperblock Algorithm On allData
     mergerHyperblock(&allData, &dataClass);
+    // Debug statement
+
+
+    std::cout << "Hello there";
 }
 
