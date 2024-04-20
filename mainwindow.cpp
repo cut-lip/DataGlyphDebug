@@ -8,6 +8,9 @@ int DATA_SIZE = 683;
 std::vector<std::vector<GLfloat>> allData(DATA_SIZE);
 std::vector<bool> dataClass(DATA_SIZE);
 
+// Declare the global variable defined in oglutilities.cpp
+extern std::vector<std::vector<GLfloat>> hyperblocks;
+
 // MainWindow constructor
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -230,12 +233,11 @@ void MainWindow::on_openGLWidget_aboutToCompose()
 
 }
 
-std::vector<std::vector<GLfloat>> MainWindow::on_hyperblock_button_clicked()
+void MainWindow::on_hyperblock_button_clicked()
 {
     // Run Hyperblock Algorithm On allData
     mergerHyperblock(&allData, &dataClass);
     // Debug statement
-
 
     std::cout << "Hello there";
 }
