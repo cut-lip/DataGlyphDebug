@@ -5,11 +5,12 @@ int DATA_SIZE = 683;
 //int NUM_ROWS = 4;
 //int NUM_COLS = 4;
 
+std::vector<std::vector<GLfloat>> allDataPreNormalize(DATA_SIZE);
 std::vector<std::vector<GLfloat>> allData(DATA_SIZE);
 std::vector<bool> dataClass(DATA_SIZE);
 
 // Declare the global variable defined in oglutilities.cpp
-//extern std::vector<std::vector<GLfloat>> hyperblocks;
+extern std::vector<std::vector<GLfloat>> hyperblocks;
 
 // MainWindow constructor
 MainWindow::MainWindow(QWidget *parent)
@@ -124,24 +125,32 @@ void OGLWidgetGrid::paintGL()
             int viewportY = j * viewportHeight;
             glViewport(viewportX, viewportY, viewportWidth, viewportHeight);
 
-
-            if (!allData[0].empty()) {
-                // Example, draw line strip
-                glLineWidth(4.0);
-                glBegin(GL_LINE_STRIP);
-                glVertex2f(allData[dataCount][1]*2, allData[dataCount][2]*2);  // Bottom left vertex
-                glVertex2f(allData[dataCount][3]*2, allData[dataCount][4]*2);  // Bottom right vertex
-                glVertex2f(allData[dataCount][5]*2, allData[dataCount][6]*2);  // Top vertex
-                glEnd();
-            } else {
-                // Example, draw line strip
-                glLineWidth(4.0);
-                glBegin(GL_LINE_STRIP);
-                glVertex2f(1, 1);           // Bottom left vertex
-                glVertex2f(0.3, 0.5);       // Bottom right vertex
-                glVertex2f(0, 0.8);         // Top vertex
-                glEnd();
-            }
+                if (!hyperblocks.empty()) {
+                    // Example, draw line strip
+                    glLineWidth(4.0);
+                    glBegin(GL_LINE_STRIP);
+                    glVertex2f(hyperblocks[dataCount][1]*2, hyperblocks[dataCount][2]*2);  // Bottom left vertex
+                    glVertex2f(hyperblocks[dataCount][3]*2, hyperblocks[dataCount][4]*2);  // Bottom right vertex
+                    glVertex2f(hyperblocks[dataCount][5]*2, hyperblocks[dataCount][6]*2);  // Top vertex
+                    glEnd();
+                }
+                else if (!allData[0].empty()) {
+                    // Example, draw line strip
+                    glLineWidth(4.0);
+                    glBegin(GL_LINE_STRIP);
+                    glVertex2f(allData[dataCount][1]*2, allData[dataCount][2]*2);  // Bottom left vertex
+                    glVertex2f(allData[dataCount][3]*2, allData[dataCount][4]*2);  // Bottom right vertex
+                    glVertex2f(allData[dataCount][5]*2, allData[dataCount][6]*2);  // Top vertex
+                    glEnd();
+                } else {
+                    // Example, draw line strip
+                    glLineWidth(4.0);
+                    glBegin(GL_LINE_STRIP);
+                    glVertex2f(1, 1);           // Bottom left vertex
+                    glVertex2f(0.3, 0.5);       // Bottom right vertex
+                    glVertex2f(0, 0.8);         // Top vertex
+                    glEnd();
+                }
 
             dataCount++;
         }
@@ -152,6 +161,26 @@ void OGLWidgetGrid::paintGL()
 
     // Flush the buffer
     glFlush();
+}
+
+std::string vectorToString(const std::vector<std::vector<float>>& vec) {
+    std::stringstream ss;
+    ss << "[";
+    for (size_t i = 0; i < vec.size(); ++i) {
+        ss << "[";
+        for (size_t j = 0; j < vec[i].size(); ++j) {
+            ss << vec[i][j];
+            if (j != vec[i].size() - 1) {
+                ss << ", ";
+            }
+        }
+        ss << "]";
+        if (i != vec.size() - 1) {
+            ss << ", ";
+        }
+    }
+    ss << "]";
+    return ss.str();
 }
 
 // OnClick funtion for upload file menu option
@@ -172,8 +201,12 @@ void MainWindow::on_actionUpload_File_triggered()
     // Import data from csv file
     processData(&dataFile, &allData, &dataClass);
 
+    allDataPreNormalize = allData;
+
     // Normalize data
     normalizeData(&allData);
+
+    //std::cout << "\n" << vectorToString(allData) << "\n";
 
     // DEBUG STATEMENT
 
@@ -236,9 +269,14 @@ void MainWindow::on_openGLWidget_aboutToCompose()
 void MainWindow::on_hyperblock_button_clicked()
 {
     // Run Hyperblock Algorithm On allData
-    mergerHyperblock(&allData, &dataClass);
+    mergerHyperblock(&allDataPreNormalize, &dataClass);
     // Debug statement
 
-    std::cout << "Hello there";
+    // Normalize data
+    normalizeData(&hyperblocks);
+
+
+    std::cout << "\n" << hyperblocks.size() <<"\n";
+    std::cout << "\nHello there\n";
 }
 

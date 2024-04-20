@@ -77,32 +77,31 @@ std::vector<bool> computeAllDistances(std::vector<GLfloat>* curr, std::vector<st
 
 void mergerHyperblock(std::vector<std::vector<GLfloat>>* all_Data, std::vector<bool>* dataClass)
 {
+
     // Initialize new vector copy of data
     std::vector<std::vector<GLfloat>> allData(*all_Data);
     std::vector<bool> dataClassCopy(*dataClass);
     std::vector<bool> thresholds{};	// track hyperblock membership
 
+    // Debug
+    std::cout << "\nallData size = " << allData.size();
+
     bool addThis = false;   // Initialize flag & class counters
+
     int classACount = 0;
     int classBCount = 0;
 
-    int count = 0;
     while (allData.size() != 0)
     {
         // Compute points within threshold
         thresholds = computeAllDistances(&allData[0], &allData);
 
         std::vector< std::vector<GLfloat>> tempData{};		// temp vec for average glyph
-        std::vector< std::vector<GLfloat>> tempDataClassA{};
-        std::vector< std::vector<GLfloat>> tempDataClassB{};
 
         // Initialize vector iterators
         std::vector<std::vector<GLfloat>>::iterator dataIt = allData.begin();
         std::vector<bool>::iterator classIt = dataClassCopy.begin();
         std::vector<bool>::iterator threshIt = thresholds.begin();
-
-        // Save first point in cluster for comparison
-        std::vector<float> currPoint = (*dataIt);
 
         addThis = false;	// reset add curr point flag
         // Use threshold values to remove points
@@ -115,12 +114,10 @@ void mergerHyperblock(std::vector<std::vector<GLfloat>>* all_Data, std::vector<b
                 if (*classIt)
                 {
                     ++classACount;
-                    tempDataClassA.push_back(*dataIt);
                 }
                 else if (!*classIt)
                 {
                     ++classBCount;
-                    tempDataClassB.push_back(*dataIt);
                 }
 
                 // Add point to temp vector
@@ -130,6 +127,7 @@ void mergerHyperblock(std::vector<std::vector<GLfloat>>* all_Data, std::vector<b
                 dataIt = allData.erase(dataIt);
                 classIt = dataClassCopy.erase(classIt);
                 threshIt = thresholds.erase(threshIt);
+                std::cout << "\nHello";
             }
             else
             {   // Increment iterators
@@ -144,7 +142,6 @@ void mergerHyperblock(std::vector<std::vector<GLfloat>>* all_Data, std::vector<b
             }
         }
 
-        ++count;
         hyperblockLabels.push_back(std::to_string(classACount) + " Class A, " +
                                 std::to_string(classBCount) + " Class B");
 
@@ -156,36 +153,18 @@ void mergerHyperblock(std::vector<std::vector<GLfloat>>* all_Data, std::vector<b
         *  the average value for each attribute from the data points
         *  in the set.
         */
-        if (classACount > classBCount)
-        {
             // CHECK INDEX VARIABLE RELEVANCY!!
-            for (unsigned int index = 0; index < 10; ++index)
-            {	// For the current index of each vector
-                GLfloat tempAttr = 0.0;
-                for (auto& vec : tempDataClassA)
-                {	// For each vector
-                    tempAttr += vec[index];
-                }
-                // Compute average value from sum
-                tempAttr /= tempDataClassA.size();
-                // Add to representative point
-                tempVec.push_back(tempAttr);
+        for (unsigned int index = 0; index < 9; ++index)
+        {	// For the current index of each vector
+            GLfloat tempAttr = 0.0;
+            for (auto& vec : tempData)
+            {	// For each vector
+                tempAttr += vec[index];
             }
-        }
-        else // class B count is larger than class A count
-        {
-            for (unsigned int index = 0; index < 10; ++index)
-            {	// For the current index of each vector
-                GLfloat tempAttr = 0.0;
-                for (auto& vec : tempDataClassB)
-                {	// For each vector
-                    tempAttr += vec[index];
-                }
-                // Compute average value from sum
-                tempAttr /= tempDataClassB.size();
-                // Add to representative point
-                tempVec.push_back(tempAttr);
-            }
+            // Compute average value from sum
+            tempAttr /= tempData.size();
+            // Add to representative point
+            tempVec.push_back(tempAttr);
         }
 
         // Add representative vector to set
@@ -195,6 +174,10 @@ void mergerHyperblock(std::vector<std::vector<GLfloat>>* all_Data, std::vector<b
         classACount = 0;
         classBCount = 0;
     }
+
+    // Debug
+    std::cout << "\nhyperblocks size = " << hyperblocks.size();
+        std::cout << "\nhyperblockLabels size = " << hyperblockLabels.size();
 
     HYPERBLOCKS_COLLECTED = true;	// set collected flag
 }
