@@ -3,10 +3,58 @@
 //int DATA_SIZE = 683;
 int NUM_ROWS = 4;
 int NUM_COLUMNS = 4;
+float THRESHOLD_VALUE = 5.0;			/* threshold calculation value */
+float MIN_THRESHOLD =2.0;
 
 bool HYPERBLOCKS_COLLECTED;
 std::vector< std::vector<GLfloat>> hyperblocks{};
 std::vector<std::string> hyperblockLabels{};
+
+/*
+isClose
+This function is a helper function for the isClose function.
+It is used to determine whether two given data points are within
+the given threshold of each other, and thus are in the same
+neighborhood.
+@param		vec1		the first data point to be compared
+            vec2		the second data point to be compared
+@return					boolean value, is vec2 within threshold
+                        of vec1
+*/
+bool isClose(std::vector<float>* vec1, std::vector<float>* vec2)
+{
+    // modified HyClu hypercube clustering algorithm. algorithm now forms Hyperblocks.
+    // Threshold value for attributes used in SPC shifts is MIN_THRESHOLD
+    // Threshold value for attributes allowed to expand is THRESHOLD
+
+    // Initialize iterators for vectors to be compared
+    std::vector<float>::iterator it1 = vec1->begin();
+    std::vector<float>::iterator it2 = vec2->begin();
+
+    int count = 0;
+    for (it1; it1 != vec1->end(); ++it1)
+    {
+        if (count == 0 || count == 1 || count == 2 || count == 5 || count == 6)
+        {
+            if (abs(*it1 - *it2) > MIN_THRESHOLD)
+            {
+                return false;
+            }
+        }
+        else if (count == 3 || count == 4 || count == 7 || count == 8)
+        {
+            if (abs(*it1 - *it2) > THRESHOLD_VALUE)
+            {
+                return false;
+            }
+        }
+
+        ++count;
+        ++it2;
+    }
+    // Return true if all attributes are within threshold
+    return true;
+}
 
 std::vector<bool> computeAllDistances(std::vector<GLfloat>* curr, std::vector<std::vector<GLfloat>>* data)
 {
@@ -27,34 +75,33 @@ std::vector<bool> computeAllDistances(std::vector<GLfloat>* curr, std::vector<st
     return close;
 }
 
-void mergerHyperblock(std::vector<std::vector<GLfloat>>* all_Data, std::vector<bool>* classify)
+void mergerHyperblock(std::vector<std::vector<GLfloat>>* all_Data, std::vector<bool>* dataClass)
 {
+
     // Initialize new vector copy of data
     std::vector<std::vector<GLfloat>> allData(*all_Data);
-    std::vector<bool> classifyCopy(*classify);
+    std::vector<bool> dataClassCopy(*dataClass);
     std::vector<bool> thresholds{};	// track hyperblock membership
 
+    // Debug
+    std::cout << "\nallData size = " << allData.size();
+
     bool addThis = false;   // Initialize flag & class counters
+
     int classACount = 0;
     int classBCount = 0;
 
-    int count = 0;
     while (allData.size() != 0)
     {
         // Compute points within threshold
         thresholds = computeAllDistances(&allData[0], &allData);
 
         std::vector< std::vector<GLfloat>> tempData{};		// temp vec for average glyph
-        std::vector< std::vector<GLfloat>> tempDataClassA{};
-        std::vector< std::vector<GLfloat>> tempDataClassB{};
 
         // Initialize vector iterators
         std::vector<std::vector<GLfloat>>::iterator dataIt = allData.begin();
-        std::vector<bool>::iterator classIt = classifyCopy.begin();
+        std::vector<bool>::iterator classIt = dataClassCopy.begin();
         std::vector<bool>::iterator threshIt = thresholds.begin();
-
-        // Save first point in cluster for comparison
-        std::vector<float> currPoint = (*dataIt);
 
         addThis = false;	// reset add curr point flag
         // Use threshold values to remove points
@@ -66,13 +113,11 @@ void mergerHyperblock(std::vector<std::vector<GLfloat>>* all_Data, std::vector<b
                 // Add class to class count
                 if (*classIt)
                 {
-                    ++ClassACount;
-                    tempDataClassA.push_back(*dataIt);
+                    ++classACount;
                 }
                 else if (!*classIt)
                 {
                     ++classBCount;
-                    tempDataClassB.pushBack(*dataIt);
                 }
 
                 // Add point to temp vector
@@ -80,8 +125,9 @@ void mergerHyperblock(std::vector<std::vector<GLfloat>>* all_Data, std::vector<b
 
                 // Remove current point from vectors
                 dataIt = allData.erase(dataIt);
-                classIt = classifyCopy.erase(classIt);
+                classIt = dataClassCopy.erase(classIt);
                 threshIt = thresholds.erase(threshIt);
+                std::cout << "\nHello";
             }
             else
             {   // Increment iterators
@@ -96,7 +142,6 @@ void mergerHyperblock(std::vector<std::vector<GLfloat>>* all_Data, std::vector<b
             }
         }
 
-        ++count;
         hyperblockLabels.push_back(std::to_string(classACount) + " Class A, " +
                                 std::to_string(classBCount) + " Class B");
 
@@ -108,36 +153,18 @@ void mergerHyperblock(std::vector<std::vector<GLfloat>>* all_Data, std::vector<b
         *  the average value for each attribute from the data points
         *  in the set.
         */
-        if (classACount > classBCount)
-        {
             // CHECK INDEX VARIABLE RELEVANCY!!
-            for (unsigned int index = 0; index < 10; ++index)
-            {	// For the current index of each vector
-                GLfloat tempAttr = 0.0;
-                for (auto& vec : tempDataClassA)
-                {	// For each vector
-                    tempAttr += vec[index];
-                }
-                // Compute average value from sum
-                tempAttr /= tempDataClassA.size();
-                // Add to representative point
-                tempVec.push_back(tempAttr);
+        for (unsigned int index = 0; index < 9; ++index)
+        {	// For the current index of each vector
+            GLfloat tempAttr = 0.0;
+            for (auto& vec : tempData)
+            {	// For each vector
+                tempAttr += vec[index];
             }
-        }
-        else // class B count is larger than class A count
-        {
-            for (unsigned int index = 0; index < 10; ++index)
-            {	// For the current index of each vector
-                GLfloat tempAttr = 0.0;
-                for (auto& vec : tempDataClassB)
-                {	// For each vector
-                    tempAttr += vec[index];
-                }
-                // Compute average value from sum
-                tempAttr /= tempDataClassB.size();
-                // Add to representative point
-                tempVec.push_back(tempAttr);
-            }
+            // Compute average value from sum
+            tempAttr /= tempData.size();
+            // Add to representative point
+            tempVec.push_back(tempAttr);
         }
 
         // Add representative vector to set
@@ -147,6 +174,10 @@ void mergerHyperblock(std::vector<std::vector<GLfloat>>* all_Data, std::vector<b
         classACount = 0;
         classBCount = 0;
     }
+
+    // Debug
+    std::cout << "\nhyperblocks size = " << hyperblocks.size();
+        std::cout << "\nhyperblockLabels size = " << hyperblockLabels.size();
 
     HYPERBLOCKS_COLLECTED = true;	// set collected flag
 }
@@ -188,7 +219,7 @@ void drawGridSPC(GLfloat originX, GLfloat originY, GLfloat endX, GLfloat endY, i
 
 // IMPORT DATA
 // EDITING CODE TO add class label to data vector at 10th index
-int processData(QFile* dataFile, std::vector<std::vector<GLfloat>>* allData, std::vector<bool>* classify)
+int processData(QFile* dataFile, std::vector<std::vector<GLfloat>>* allData, std::vector<bool>* dataClass)
 {
     // Read data file
     std::string line = "";
@@ -221,12 +252,12 @@ int processData(QFile* dataFile, std::vector<std::vector<GLfloat>>* allData, std
 
         std::vector<GLfloat> data(dataInt.begin(), dataInt.end());
 
+        // Save class to dataClass vector
+        if (*--(data.end()) == 4) dataClass->push_back(false);
+        else					  dataClass->push_back(true);
+
         // Remove labels from data
         data.erase(data.begin());
-
-        // Save Class Label Into Classify Vector
-        // 2 for positive, 4 for negative
-        // This must be standardized in a way which we didn't do before
         data.erase(--data.end());
 
         (*allData)[count] = data;
