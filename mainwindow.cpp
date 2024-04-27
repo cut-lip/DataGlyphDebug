@@ -5,6 +5,8 @@ int DATA_SIZE = 683;
 //int NUM_ROWS = 4;
 //int NUM_COLS = 4;
 
+//std::vector<std::vector<GLfloat>>::iterator it;
+
 std::vector<std::vector<GLfloat>> allDataPreNormalize(DATA_SIZE);
 std::vector<std::vector<GLfloat>> allData(DATA_SIZE);
 std::vector<bool> dataClass(DATA_SIZE);
@@ -143,6 +145,82 @@ void OGLWidgetGrid::paintGL()
                     glEnd();
                 }
                 else if (!allData[0].empty()) {
+                    int repCount = 0;
+                    bool DYNAMIC_ANGLES = false;
+                    bool POS_ANGLE = false;
+                    float GLYPH_SCALE_FACTOR = 0.25;
+                    float SF_SEGMENT_CONSTANT = 0.5;
+                    float SF_ANGLE_SCALE = 2.0;
+                    bool ANGLE_FOCUS = true;
+                    bool BIRD_FOCUS = true;
+
+                    // Initialize data iterator
+                    std::vector<std::vector<GLfloat>>::iterator it = allData.begin();
+                    std::vector<bool>::iterator classIt = dataClass.begin();
+                    glPushMatrix();		// Scale and translate glyph
+
+                    // Draw polygon outlines
+                    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+                    // Pointer to current data point
+                    std::vector<GLfloat> processedData = *it;
+
+                    std::vector<GLfloat> axesSPC{};
+                    axesSPC.push_back(*(processedData.begin() + 3));	// X1
+                    axesSPC.push_back(*(processedData.begin() + 2));	// Y1
+                    axesSPC.push_back(*(processedData.begin() + 3));	// X2
+                    axesSPC.push_back(*(processedData.begin() + 4));	// Y2
+                    axesSPC.push_back(*(processedData.begin() + 8));	// X3
+                    axesSPC.push_back(*(processedData.begin() + 7));	// Y3
+
+                    // Encode angles with most meaningful attributes
+                    std::vector<GLfloat> stickFig{};
+                    // Populate: CL (angle), UC (length), BN (angle), BC (length)
+                    stickFig.push_back(*(processedData.begin()));			// Angle 1
+                    stickFig.push_back(*(processedData.begin() + 1));	// Length 1
+                    stickFig.push_back(*(processedData.begin() + 5));	// Angle 2
+                    stickFig.push_back(*(processedData.begin() + 6));	// Length 2
+
+                    float colors[6];
+                    colors[0] = *(processedData.begin() + 2);
+                    colors[1] = *(processedData.begin() + 1);
+                    colors[2] = *(processedData.begin() + 0);
+                    colors[3] = *(processedData.begin() + 2);
+                    colors[4] = *(processedData.begin() + 7);
+                    colors[5] = *(processedData.begin() + 6);
+
+                    glPushMatrix();		// Push new matrix
+                    glMatrixMode(GL_PROJECTION);
+                    glLineWidth(4.0);	// Line width = 4.0
+
+                    GLfloat TRANS_DEF = 0.0;	// Default translation factor
+                    GLfloat SCALE_DEF = 1.0;	// Default scaling factor
+                    glPushMatrix();	// Push new matrix for glyph transformations
+                    // Translate glyph right a based on first SPC shift, and up a set value
+                    glScalef(1.7, 1.7, 1.7);
+                    glTranslatef(-0.45, 0.35, 0.0);
+                    //glTranslatef(glyphTransHort, glyphTransVert - 0.1, TRANS_DEF);
+                    GLfloat glyphScaleFactor = 2.0;
+
+                    glEnable(GL_BLEND);		// Enable blending.
+                    glDepthMask(GL_FALSE);	// Disable depth masking
+
+                    // *********************** DRAW STICK FIGURE ***********************
+                    //A2
+                    // Draw representative glyphs in color, Draw other glyphs in grey, if selected
+
+                    glyph.drawGlyphSF(pos2, pos3, stickFig.begin(), *classIt, *turt, DYNAMIC_ANGLES, POS_ANGLE,
+                                      GLYPH_SCALE_FACTOR, SF_SEGMENT_CONSTANT, SF_ANGLE_SCALE, ANGLE_FOCUS, BIRD_FOCUS, colors);
+
+                    // Disable blending and resume depth mask
+                    glDepthMask(GL_TRUE);
+                    glDisable(GL_BLEND);
+                    ++repCount;
+                    ++it;
+                    // RESET THE CP AND CD
+                    turt->setCP(0.0, 0.0);
+
+/*
                     // Example, draw line strip
                     glLineWidth(4.0);
                     glBegin(GL_LINE_STRIP);
@@ -150,6 +228,7 @@ void OGLWidgetGrid::paintGL()
                     glVertex2f(allData[dataCount][3]*2, allData[dataCount][4]*2);  // Bottom right vertex
                     glVertex2f(allData[dataCount][5]*2, allData[dataCount][6]*2);  // Top vertex
                     glEnd();
+*/
                 } else {
                     // Example, draw line strip
                     glLineWidth(4.0);
@@ -169,6 +248,8 @@ void OGLWidgetGrid::paintGL()
 
     // Clean up memory
     delete turt;
+    delete pos2;
+    delete pos3;
 
     // Flush the buffer
     glFlush();
