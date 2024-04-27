@@ -5,7 +5,7 @@ int DATA_SIZE = 683;
 //int NUM_ROWS = 4;
 //int NUM_COLS = 4;
 
-//std::vector<std::vector<GLfloat>>::iterator it;
+std::vector<std::vector<GLfloat>>::iterator it;
 
 std::vector<std::vector<GLfloat>> allDataPreNormalize(DATA_SIZE);
 std::vector<std::vector<GLfloat>> allData(DATA_SIZE);
@@ -155,7 +155,7 @@ void OGLWidgetGrid::paintGL()
                     bool BIRD_FOCUS = true;
 
                     // Initialize data iterator
-                    std::vector<std::vector<GLfloat>>::iterator it = allData.begin();
+                    //std::vector<std::vector<GLfloat>>::iterator it = allData.begin();
                     std::vector<bool>::iterator classIt = dataClass.begin();
                     glPushMatrix();		// Scale and translate glyph
 
@@ -189,6 +189,13 @@ void OGLWidgetGrid::paintGL()
                     colors[4] = *(processedData.begin() + 7);
                     colors[5] = *(processedData.begin() + 6);
 
+                    // If color values too high, round down so still visible
+                    for (unsigned int i = 0; i < 6; i++){
+                        if (colors[i] > 0.8){
+                            colors[i] = colors[i] - 0.15;
+                        }
+                    }
+
                     glPushMatrix();		// Push new matrix
                     glMatrixMode(GL_PROJECTION);
                     glLineWidth(4.0);	// Line width = 4.0
@@ -212,6 +219,17 @@ void OGLWidgetGrid::paintGL()
                     glyph.drawGlyphSF(pos2, pos3, stickFig.begin(), *classIt, *turt, DYNAMIC_ANGLES, POS_ANGLE,
                                       GLYPH_SCALE_FACTOR, SF_SEGMENT_CONSTANT, SF_ANGLE_SCALE, ANGLE_FOCUS, BIRD_FOCUS, colors);
 
+                    float AXIS_LENGTH = 0.1;
+                    bool DOTTED_AXES = FALSE;
+
+                    glLineWidth(2.0);	// Line width = 2.0
+                    glyph.drawAxesSPC(*pos2, *pos3, axesSPC.begin(),
+                                      AXIS_LENGTH, 0.25, DOTTED_AXES);
+
+
+
+
+
                     // Disable blending and resume depth mask
                     glDepthMask(GL_TRUE);
                     glDisable(GL_BLEND);
@@ -219,6 +237,10 @@ void OGLWidgetGrid::paintGL()
                     ++it;
                     // RESET THE CP AND CD
                     turt->setCP(0.0, 0.0);
+
+                    glPopMatrix();
+                    glPopMatrix();
+                    glPopMatrix();
 
 /*
                     // Example, draw line strip
@@ -297,7 +319,7 @@ void MainWindow::on_actionUpload_File_triggered()
 
     // Normalize data
     normalizeData(&allData);
-
+    it = allData.begin();
     //std::cout << "\n" << vectorToString(allData) << "\n";
 
     // DEBUG STATEMENT
