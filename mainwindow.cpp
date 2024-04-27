@@ -81,9 +81,11 @@ void OGLWidgetGrid::paintGL()
 {
     // Initialize Graphics Tools
     // Construct glyph tool
-    //SpcSfGlyph glyph = SpcSfGlyph();
+    SpcSfGlyph glyph = SpcSfGlyph();
     // Construct turtle tool
- //   TurtleG* turt = new TurtleG();
+    TurtleG* turt = new TurtleG();
+    Point2* pos2 = new Point2();
+    Point2* pos3 = new Point2();
 
     // Switch to modelview matrix mode
     initializeOpenGLFunctions();
@@ -164,6 +166,9 @@ void OGLWidgetGrid::paintGL()
 
     glViewport(0, 0, width()/4, height()/4);
     glColor3f(0.0, 0.0, 1.0);
+
+    // Clean up memory
+    delete turt;
 
     // Flush the buffer
     glFlush();
