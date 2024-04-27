@@ -6,19 +6,17 @@
 /*
     * TurtleG
     * Constructor. Construct new TurtleG object
-    * with specified current position (CP) and
-    * current direction (CD).
-    * TurtleG object with current position (CP)
+    * with current position (CP)
     * set to (0.0, 0.0)
     *
     * @param	x		x coordinate of CP
     *			y		y coordinate of CP
     *			angle	initial direction of CD
     */
-TurtleG(GLfloat x, GLfloat y, GLfloat angle)
+TurtleG()
 {
-    this->CP = Point2(x, y);
-    this->CD = angle;
+    this->CP = Point2(0.0, 0.0);
+    this->CD = 0.0;
 }
 
 /*
@@ -26,8 +24,6 @@ TurtleG(GLfloat x, GLfloat y, GLfloat angle)
     * Constructor. Construct new TurtleG object
     * with specified current position (CP) and
     * current direction (CD).
-    * TurtleG object with current position (CP)
-    * set to (0.0, 0.0)
     *
     * @param	x		x coordinate of CP
     *			y		y coordinate of CP
@@ -124,3 +120,31 @@ GLfloat getCD()
 {
     return this->CD;
 }
+
+// Draw a line from CP to the new vertex
+void lineTo(float x, float y)
+{
+    glBegin(GL_LINES);
+    glVertex2f((GLfloat)CP.getx(), (GLfloat)CP.gety());
+    glVertex2f((GLfloat)x, (GLfloat)y);
+    glEnd();
+
+    CP.set(x, y);	// Update the CP
+    glFlush();		// Flush the buffer
+}
+
+void lineTo(Point2 p)
+{
+    glBegin(GL_LINES);
+    glVertex2f((GLfloat)CP.getx(), (GLfloat)CP.gety());
+    glVertex2f((GLfloat)p.getx(), (GLfloat)p.gety());
+    glEnd();
+
+    CP.set(p.getx(), p.gety());	// Update the CP
+    glFlush();		// Flush the buffer
+}
+
+// Update the CP
+void moveTo(float x, float y) { CP.set(x, y); }
+
+void moveTo(Point2 p) { CP.set(p.getx(), p.gety()); }

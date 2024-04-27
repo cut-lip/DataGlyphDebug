@@ -103,31 +103,13 @@ public:
 private:
 
     // Draw a line from CP to the new vertex
-    void lineTo(float x, float y)
-    {
-        glBegin(GL_LINES);
-        glVertex2f((GLfloat)CP.getx(), (GLfloat)CP.gety());
-        glVertex2f((GLfloat)x, (GLfloat)y);
-        glEnd();
-
-        CP.set(x, y);	// Update the CP
-        glFlush();		// Flush the buffer
-    }
-    void lineTo(Point2 p)
-    {
-        glBegin(GL_LINES);
-        glVertex2f((GLfloat)CP.getx(), (GLfloat)CP.gety());
-        glVertex2f((GLfloat)p.getx(), (GLfloat)p.gety());
-        glEnd();
-
-        CP.set(p.getx(), p.gety());	// Update the CP
-        glFlush();		// Flush the buffer
-    }
+    void lineTo(float x, float y);
+    void lineTo(Point2 p);
 
     // Update the CP
-    void moveTo(float x, float y) { CP.set(x, y); }
+    void moveTo(float x, float y);
 
-    void moveTo(Point2 p) { CP.set(p.getx(), p.gety()); }
+    void moveTo(Point2 p);
 
     // Current position
     // (defines current location of turtle in viewport coordinates)
