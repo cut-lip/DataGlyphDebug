@@ -210,7 +210,7 @@ public:
 private:
 
     // Normalize data value to angle value
-    GLfloat normalizeAngle(GLfloat m)
+    static GLfloat normalizeAngle(GLfloat m)
     {
         // Range 0-85 degrees
         GLfloat rmin = R_MIN;		// Min value data range
