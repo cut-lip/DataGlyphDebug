@@ -1,4 +1,6 @@
-#pragma once
+#ifndef TURTLEG_H
+#define TURTLEG_H
+
 #include "point2.h"
 //#include "GL/glut.h"
 
@@ -120,3 +122,4 @@ private:
     GLfloat CD = 0.0;
 };
 
+#endif TURTLEG_H

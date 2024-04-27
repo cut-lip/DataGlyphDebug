@@ -1,4 +1,6 @@
-#pragma once
+#ifndef SPC_SF_H
+#define SPC_SF_H
+
 #include <vector>
 #include "turtleg.h"
 #include "myglfuncs.h"
@@ -220,3 +222,5 @@ private:
         return (((m - rmin) / (rmax - rmin)) * (tmax - tmin)) + tmin;
     }
 };
+
+#endif SPC_SF_H
