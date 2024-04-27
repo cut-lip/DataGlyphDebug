@@ -18,7 +18,7 @@
 #include "point2.h"
 #include "vec2.h"
 
-
+// Add namespace
 
 // Import data from CVS file
 int processData(QFile* dataFile, std::vector<std::vector<GLfloat>>* allData, std::vector<bool>* classify);

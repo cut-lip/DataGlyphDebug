@@ -1,5 +1,6 @@
 #pragma once
 #include <math.h>
+#include <QOpenGLFunctions>
 //#include "GL/glut.h"
 
 // A 2-D vector

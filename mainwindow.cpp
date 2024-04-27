@@ -79,6 +79,12 @@ void OGLWidgetGrid::resizeGL(int w, int h)
 
 void OGLWidgetGrid::paintGL()
 {
+    // Initialize Graphics Tools
+    // Construct glyph tool
+    //SpcSfGlyph glyph = SpcSfGlyph();
+    // Construct turtle tool
+ //   TurtleG* turt = new TurtleG();
+
     // Switch to modelview matrix mode
     initializeOpenGLFunctions();
     glMatrixMode(GL_MODELVIEW);

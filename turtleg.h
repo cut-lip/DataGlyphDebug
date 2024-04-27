@@ -1,7 +1,6 @@
-#ifndef TURTLEG_H
-#define TURTLEG_H
-
+#pragma once
 #include "point2.h"
+#include <QOpenGLFunctions>
 //#include "GL/glut.h"
 
 // Constant value for converting radians to degrees
@@ -122,4 +121,3 @@ private:
     GLfloat CD = 0.0;
 };
 
-#endif TURTLEG_H

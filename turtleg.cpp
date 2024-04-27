@@ -13,7 +13,7 @@
     *			y		y coordinate of CP
     *			angle	initial direction of CD
     */
-TurtleG()
+TurtleG::TurtleG()
 {
     this->CP = Point2(0.0, 0.0);
     this->CD = 0.0;
@@ -29,7 +29,7 @@ TurtleG()
     *			y		y coordinate of CP
     *			angle	initial direction of CD
     */
-TurtleG(GLfloat x, GLfloat y, GLfloat angle)
+TurtleG::TurtleG(GLfloat x, GLfloat y, GLfloat angle)
 {
     this->CP = Point2(x, y);
     this->CD = angle;
@@ -42,7 +42,7 @@ TurtleG(GLfloat x, GLfloat y, GLfloat angle)
     *
     * @param angle Value in degrees to  be turned to
     */
-void turnTo(GLfloat angle)
+void TurtleG::turnTo(GLfloat angle)
 {
     this->CD = angle;
 }
@@ -53,7 +53,7 @@ void turnTo(GLfloat angle)
     *
     * @param angle Value in degrees to be turned to
     */
-void turn(GLfloat angle)
+void TurtleG::turn(GLfloat angle)
 {
     this->CD += angle;
 }
@@ -66,7 +66,7 @@ void turn(GLfloat angle)
     * @param	distance	the distance to be traveled
     *			isVisible	draw the line or not
     */
-void forward(float distance, bool isVisible)
+void TurtleG::forward(float distance, bool isVisible)
 {
     // Determine endpoint based on radial distance
     float x = CP.getx() + distance * cos(RADIAN_PER_DEGREE * CD);
@@ -83,7 +83,7 @@ void forward(float distance, bool isVisible)
     * @param	x	x coordinate of new CP
     *			y	y coordinate of new CP
     */
-void setCP(GLfloat x, GLfloat y)
+void TurtleG::setCP(GLfloat x, GLfloat y)
 {
     this->CP = Point2(x, y);
 }
@@ -94,7 +94,7 @@ void setCP(GLfloat x, GLfloat y)
     *
     * @return	Point2	turtle's current position
     */
-Point2 getCP()
+Point2 TurtleG::getCP()
 {
     return this->CP;
 }
@@ -105,7 +105,7 @@ Point2 getCP()
     *
     * @param	angle	direction of the turtle
     */
-void setCD(GLfloat angle)
+void TurtleG::setCD(GLfloat angle)
 {
     this->CD = angle;
 }
@@ -116,13 +116,13 @@ void setCD(GLfloat angle)
     *
     * @return	GLfloat	current direction of turtle
     */
-GLfloat getCD()
+GLfloat TurtleG::getCD()
 {
     return this->CD;
 }
 
 // Draw a line from CP to the new vertex
-void lineTo(float x, float y)
+void TurtleG::lineTo(float x, float y)
 {
     glBegin(GL_LINES);
     glVertex2f((GLfloat)CP.getx(), (GLfloat)CP.gety());
@@ -133,7 +133,7 @@ void lineTo(float x, float y)
     glFlush();		// Flush the buffer
 }
 
-void lineTo(Point2 p)
+void TurtleG::lineTo(Point2 p)
 {
     glBegin(GL_LINES);
     glVertex2f((GLfloat)CP.getx(), (GLfloat)CP.gety());
@@ -145,6 +145,6 @@ void lineTo(Point2 p)
 }
 
 // Update the CP
-void moveTo(float x, float y) { CP.set(x, y); }
+void TurtleG::moveTo(float x, float y) { CP.set(x, y); }
 
-void moveTo(Point2 p) { CP.set(p.getx(), p.gety()); }
+void TurtleG::moveTo(Point2 p) { CP.set(p.getx(), p.gety()); }

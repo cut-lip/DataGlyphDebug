@@ -1,10 +1,12 @@
 #ifndef SPC_SF_H
 #define SPC_SF_H
 
+// #pragma once
 #include <vector>
 #include "turtleg.h"
-#include "myglfuncs.h"
-
+//#include "myglfuncs.h"
+#include "oglutilities.h"
+/*
 float COLOR_0 = 0.0;
 float COLOR_1 = 1.0;
 float ALPHA_CROSS = 0.7;
@@ -21,7 +23,7 @@ float R_MIN = 0.1;
 float R_MAX = 1.0;
 float T_MIN = 10.0;
 float T_MAX = 85.0;
-
+*/
 // An individual SPC-SF glyph located in 2-D space
 class SpcSfGlyph {
 public:
@@ -209,6 +211,23 @@ public:
 
 private:
 
+    float SF_SEGMENT_CONSTANT = 0.5;
+    float SF_ANGLE_SCALE = 2.0;
+    float GLYPH_SCALE_FACTOR = 0.25;
+
+    static constexpr float COLOR_0 = 0.0;
+    static constexpr float COLOR_1 = 1.0;
+    static constexpr float ALPHA_CROSS = 0.7;
+
+    static constexpr float CROSS_SCALE = 0.2;
+    static constexpr int CROSS_REDUCE = 2;
+    static constexpr float CROSS_SCALE_FACTOR = 0.07;
+
+    static constexpr float R_MIN = 0.1;
+    static constexpr float R_MAX = 1.0;
+    static constexpr float T_MIN = 10.0;
+    static constexpr float T_MAX = 85.0;
+
     // Normalize data value to angle value
     static GLfloat normalizeAngle(GLfloat m)
     {
@@ -223,4 +242,4 @@ private:
     }
 };
 
-#endif SPC_SF_H
+#endif
