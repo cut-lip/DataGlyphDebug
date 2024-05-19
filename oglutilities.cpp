@@ -515,4 +515,97 @@ void drawLocatedGLyphs(std::vector<GLfloat>* normalData, bool classify, int size
     // Marginal adhesion
     GLfloat bc = *(normalData->begin() + 6);
 
+    std::vector<GLfloat> axesSPC{};
+    axesSPC.push_back(*((normalData)->begin() + 3));	// X1
+    axesSPC.push_back(*((normalData)->begin() + 2));	// Y1
+    axesSPC.push_back(*((normalData)->begin() + 3));	// X2
+    axesSPC.push_back(*((normalData)->begin() + 4));	// Y2
+    axesSPC.push_back(*((normalData)->begin() + 8));	// X3
+    axesSPC.push_back(*((normalData)->begin() + 7));	// Y3
+    // Encode angles with most meaningful attributes
+    std::vector<GLfloat> stickFig{};
+    // Populate: CL (angle), UC (length), BN (angle), BC (length)
+    stickFig.push_back(*((normalData)->begin()));			// Angle 1
+    stickFig.push_back(*((normalData)->begin() + 1));	// Length 1
+    stickFig.push_back(*((normalData)->begin() + 2));	// Angle 2
+    stickFig.push_back(*((normalData)->begin() + 3));	// Length 2
+
+    // Arrange greater SPC position attributes from optimal positioning described in Worland, Wagle, and Kovalerchuk
+    std::vector<GLfloat> position{ cl, bn, ucsize, bc, bn, ucshape };
+    //std::vector<GLfloat> position{ uc, bn, bc, cl, bn, mg };
+    std::vector<GLfloat>::iterator positionIt = position.begin();
+
+    // Construct glyph tool
+    SpcSfGlyph glyph = SpcSfGlyph();
+    // Construct turtle tool
+    TurtleG* turt = new TurtleG();
+
+    Point2* pos2 = new Point2();
+    Point2* pos3 = new Point2();
+
+        // DANGER DANGER!!!!!!!!
+    // Locate the lower-left corner of viewport for glyph drawing
+    GLfloat x1 = ((SCREEN_WIDTH / WIDTH_SCALE) * *positionIt) - ((GLint)SCREEN_WIDTH / (VIEWPORT_SCALE * 2));
+    GLfloat y1 = ((SCREEN_HEIGHT - (SCREEN_HEIGHT / HEIGHT_SCALE)) * *++positionIt) - ((GLint)SCREEN_WIDTH / (VIEWPORT_SCALE * 2));
+
+    glPushMatrix();
+
+    //Glyph1
+    glLineWidth(4.0);
+
+    glyph.drawGlyphSF(pos2, pos3, stickFig.begin(), classify, *turt, DYNAMIC_ANGLES, POS_ANGLE, GLYPH_SCALE_FACTOR, 0.1, 2.0, ANGLE_FOCUS, BIRD_FOCUS, colors);
+    // RESET THE CP AND CD
+    turt->setCP(0.0, 0.0);
+    // *********************** DRAW SPC AXES ***********************
+    if (DRAW_AXES)
+    {
+        glLineWidth(2.0);
+        glyph.drawAxesSPC(*pos2, *pos3, axesSPC.begin(), AXIS_LENGTH, GLYPH_SCALE_FACTOR, DOTTED_AXES);
+    }
+
+    // Locate the viewport for glyph drawing
+    GLfloat x2 = ((SCREEN_WIDTH / WIDTH_SCALE) * *++positionIt) + (SCREEN_WIDTH / 3) - ((GLint)SCREEN_WIDTH / (VIEWPORT_SCALE * 2));
+    GLfloat y2 = ((SCREEN_HEIGHT - (SCREEN_HEIGHT / HEIGHT_SCALE)) * *++positionIt) - ((GLint)SCREEN_WIDTH / (VIEWPORT_SCALE * 2));
+
+    // Locate the viewport for glyph drawing
+    glViewport(
+        x2,
+        y2,
+        SCREEN_WIDTH / VIEWPORT_SCALE,
+        SCREEN_WIDTH / VIEWPORT_SCALE
+        );
+
+    //Glyph2
+    glLineWidth(4.0);
+    glyph.drawGlyphSF(pos2, pos3, stickFig.begin(), classify, *turt, DYNAMIC_ANGLES, POS_ANGLE, 0.25, 0.1, 2.0, ANGLE_FOCUS, BIRD_FOCUS, colors);
+    // RESET THE CP AND CD
+    turt->setCP(0.0, 0.0);
+
+    glLineWidth(2.0);
+    glyph.drawAxesSPC(*pos2, *pos3, axesSPC.begin(), AXIS_LENGTH, 0.25, DOTTED_AXES);
+
+    // Locate the viewport for glyph drawing
+    GLfloat x3 = ((SCREEN_WIDTH / WIDTH_SCALE) * *++positionIt) + (((2 * SCREEN_WIDTH) / 3)) - ((GLint)SCREEN_WIDTH / (VIEWPORT_SCALE * 2));
+    GLfloat y3 = ((SCREEN_HEIGHT - (SCREEN_HEIGHT / HEIGHT_SCALE)) * *++positionIt) - ((GLint)SCREEN_WIDTH / (VIEWPORT_SCALE * 2));
+
+    // Locate the viewport for glyph drawing
+    glViewport(
+        x3,
+        y3,
+        SCREEN_WIDTH / VIEWPORT_SCALE,
+        SCREEN_WIDTH / VIEWPORT_SCALE
+        );
+
+
+    //Glyph3
+    glLineWidth(4.0);
+    glyph.drawGlyphSF(pos2, pos3, stickFig.begin(), classify, *turt, DYNAMIC_ANGLES, POS_ANGLE, 0.25, 0.1, 2.0, ANGLE_FOCUS, BIRD_FOCUS, colors);
+    // RESET THE CP AND CD
+    turt->setCP(0.0, 0.0);
+    // *********************** DRAW SPC AXES ***********************
+    if (DRAW_AXES)
+    {
+        glLineWidth(2.0);
+        glyph.drawAxesSPC(*pos2, *pos3, axesSPC.begin(), AXIS_LENGTH, 0.25, DOTTED_AXES);
+    }
 }
