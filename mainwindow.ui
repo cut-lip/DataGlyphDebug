@@ -63,7 +63,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="Grid">
      <attribute name="title">
@@ -87,9 +87,9 @@
      <widget class="OGLWidgetSPC" name="openGLWidget_2">
       <property name="geometry">
        <rect>
-        <x>30</x>
-        <y>30</y>
-        <width>801</width>
+        <x>0</x>
+        <y>60</y>
+        <width>561</width>
         <height>421</height>
        </rect>
       </property>

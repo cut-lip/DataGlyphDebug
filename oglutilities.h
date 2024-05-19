@@ -38,4 +38,6 @@ std::vector<bool> computeAllDistances(std::vector<GLfloat>* curr, std::vector<st
 
 bool isClose(std::vector<float>* vec1, std::vector<float>* vec2);
 
+void drawLocatedGLyphs(std::vector<GLfloat>* normalData, bool classify, int size, int iteration, std::string hbLabel, std::string hbLabel2);
+
 #endif // OGLUTILITIES_H

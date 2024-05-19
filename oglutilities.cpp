@@ -477,3 +477,42 @@ void drawArrow(Point2 start, Point2 end, const unsigned int winHeight)
 
     glEnd();
 }
+
+
+void drawLocatedGLyphs(std::vector<GLfloat>* normalData, bool classify, int size, int iteration, std::string hbLabel, std::string hbLabel2) {
+    // encode colors to bird glyph winds in located glyphs
+    float colors[6];
+    colors[0] = *(normalData->begin() + 4);
+    colors[1] = *(normalData->begin() + 5);
+    colors[2] = *(normalData->begin() + 6);
+    colors[3] = *(normalData->begin() + 2);
+    colors[4] = *(normalData->begin() + 7);
+    colors[5] = *(normalData->begin() + 5);
+
+    // If color values too high, round down so still visible
+    for (unsigned int i = 0; i < 6; i++)
+    {
+        if (colors[i] > 0.8)
+        {
+            colors[i] = colors[i] - 0.1;
+        }
+    }
+
+    glPushMatrix();
+
+    // Encode custom attributes to SPC positions
+    GLfloat ucsize = *(normalData->begin() + 1);
+
+    // Uniformity of cell size
+    GLfloat ucshape = *(normalData->begin() + 2);
+
+    // Clump thickness
+    GLfloat cl = *(normalData->begin());
+
+    // Bland chromatin
+    GLfloat bn = *(normalData->begin() + 5);
+
+    // Marginal adhesion
+    GLfloat bc = *(normalData->begin() + 6);
+
+}

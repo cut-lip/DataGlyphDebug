@@ -62,7 +62,7 @@ void OGLWidgetSPC::paintGL() {
 
     auto numSPC = 3;
     auto margin = 10;
-    auto gridWidth = (width() / numSPC) - 2 * margin;
+    glTranslatef(0.0, 20.0, 0.0);
 
     // DRAW 1st SPC AXES
     glLineWidth(4.0);
@@ -85,7 +85,7 @@ void OGLWidgetSPC::paintGL() {
     drawGridSPC((width() / numSPC) + margin, 0,
                 (width() / 4) + (width() / 24), height() - margin, 5);
 
-    /*
+
     // Draw 3rd SPC axes
     glLineWidth(4.0);
     drawArrow(Point2(((2 * width()) / numSPC), margin),
@@ -96,5 +96,4 @@ void OGLWidgetSPC::paintGL() {
     glLineWidth(1.0);
     drawGridSPC(((2 * width()) / numSPC) + margin, 0,
                 (width() / 4) + (width() / 24), height() - margin, 5);
-*/
 }
