@@ -212,23 +212,27 @@ void drawGridSPC(GLfloat originX, GLfloat originY, GLfloat endX, GLfloat endY, u
 
     glLineWidth(1.0);		// Set line width to 1
     glPushMatrix();			// Push new matrix
+
+    GLfloat cellWidth = (endX - originX) / dimension;
+    GLfloat cellHeight = (endY - originY) / dimension;
+
     for (unsigned int rowNum = 0; rowNum < dimension; ++rowNum)		// Rows
     {
         for (unsigned int colNum = 0; colNum < dimension; ++colNum)	// Columns
         {
             glRectf(		// Draw outlined rectangles for SPC grid
-                originX + ((endX / dimension) * colNum),
-                originY + ((endY / dimension) * rowNum),
-                ((endX) / dimension) * (colNum + 1),
-                ((endY) / dimension) * (rowNum + 1)
+                originX + cellWidth * colNum,
+                originY + cellHeight * rowNum,
+                originX + cellWidth * (colNum + 1),
+                originY + cellHeight * (rowNum + 1)
                 );
         }
     }
     // Reset OpenGL state
+    glPopMatrix();		// Pop a matrix from gl matrix stack
+    glPopMatrix();		// Pop a matrix from gl matrix stack
     glLineWidth(2.0);		// Set line width to 2
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);	// Fill shapes
-    glPopMatrix();		// Pop a matrix from gl matrix stack
-    glPopMatrix();		// Pop a matrix from gl matrix stack
 }
 
 // IMPORT DATA

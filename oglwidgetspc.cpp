@@ -48,13 +48,13 @@ void OGLWidgetSPC::paintGL() {
     glPushMatrix();
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    glColor3f(1.0, 0.0, 0.0);
+    glColor3f(0.0, 0.0, 0.0);
 
     // Call this to enable Qt to work with vertex arrays
     glEnableClientState(GL_VERTEX_ARRAY);
 
     // Set the viewport to the entire widget
-    glViewport(0, 0, width(), height()/2);
+    glViewport(0, 0, width(), height());
 
     auto numSPC = 3;
     auto margin = 10;
@@ -63,35 +63,35 @@ void OGLWidgetSPC::paintGL() {
     // DRAW 1st SPC AXES
     glLineWidth(4.0);
     drawArrow(Point2(margin, margin), Point2(margin, height() - margin), width());
-    drawArrow(Point2(margin, margin), Point2((width() / 4) + (width() / 24), margin), height());
+    drawArrow(Point2(margin, margin), Point2((width() / 4) + (width() / 24), margin), width());
 
     glLineWidth(1.0);
     drawGridSPC(0, 0,
-                (width() / 4) + (width() / 24), height() - 10, 5);
+                (width() / 4) + (width() / 24), height() - margin, 5);
 
     // Draw 2nd SPC axes
     glLineWidth(4.0);
     drawArrow(Point2((width() / numSPC), margin),
-              Point2((width() / numSPC), height() - margin), height());
+              Point2((width() / numSPC), height() - margin), width());
 
     drawArrow(Point2((width() / numSPC), margin),
-              Point2(((7 * width()) / 12) + (width() / 24), margin), height());
+              Point2(((7 * width()) / 12) + (width() / 24), margin), width());
 
     glLineWidth(1.0);
-    drawGridSPC((width() / numSPC) + margin, 0,
-                (width() / 4) + (width() / 24), height() - margin, 5);
+    drawGridSPC((width() / numSPC), 0,
+                ((7 * width()) / 12) + (width() / 24), height() - margin, 5);
 
 
     // Draw 3rd SPC axes
     glLineWidth(4.0);
     drawArrow(Point2(((2 * width()) / numSPC), margin),
-              Point2(((2 * width()) / numSPC), height() - margin), height());
+              Point2(((2 * width()) / numSPC), height() - margin), width());
     drawArrow(Point2(((2 * width()) / numSPC), margin),
-              Point2(((11 * width()) / 12) + (width() / 24), margin), height());
+              Point2(((11 * width()) / 12) + (width() / 24), margin), width());
 
     glLineWidth(1.0);
-    drawGridSPC(((2 * width()) / numSPC) + margin, 0,
-                (width() / 4) + (width() / 24), height() - margin, 5);
+    drawGridSPC(((2 * width()) / numSPC), 0,
+                ((11 * width()) / 12) + (width() / 24), height() - margin, 5);
 
 
     if (!allData[0].empty()) {
