@@ -1,5 +1,8 @@
 #include "oglwidgetspc.h"
+#include <QMatrix4x4>
 
+
+extern std::vector<std::vector<GLfloat>> allData;;
 
 OGLWidgetSPC::OGLWidgetSPC(QWidget *parent)
     : QOpenGLWidget(parent)
@@ -42,16 +45,9 @@ void OGLWidgetSPC::resizeGL(int w, int h)
 void OGLWidgetSPC::paintGL() {
     // Switch to modelview matrix mode
     initializeOpenGLFunctions();
+    glPushMatrix();
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-
-    // DEBUG STATEMENT
-    /*
-    for (const auto& number : allData[0]) {
-        std::cout << number << " ";
-    }
-    */
-
     glColor3f(1.0, 0.0, 0.0);
 
     // Call this to enable Qt to work with vertex arrays
@@ -62,7 +58,7 @@ void OGLWidgetSPC::paintGL() {
 
     auto numSPC = 3;
     auto margin = 10;
-    glTranslatef(0.0, 20.0, 0.0);
+    //glTranslatef(0.0, 20.0, 0.0);
 
     // DRAW 1st SPC AXES
     glLineWidth(4.0);
@@ -96,4 +92,53 @@ void OGLWidgetSPC::paintGL() {
     glLineWidth(1.0);
     drawGridSPC(((2 * width()) / numSPC) + margin, 0,
                 (width() / 4) + (width() / 24), height() - margin, 5);
+
+
+    if (!allData[0].empty()) {
+
+        int iteration = 1;
+        // Display points within threshold
+        // Pass through twice: Draw classes sequentially depending on CLASS_SEPERATION_MODE flag
+        for (std::vector<std::vector<GLfloat>>::iterator it = (allData.begin());
+             it < allData.end(); ++it)
+        {
+            // Set the viewport to the entire widget
+            //glViewport(0, 0, width(), height()/2);
+
+            //DEBUGG
+            std::cout << "Hello STPPPPPSJNFES" << std::endl;
+
+            glBegin(GL_LINE_LOOP);
+            glVertex2f(0, 0);
+            glVertex2f(200, 200);
+            glEnd();
+
+
+            //glMatrixMode(GL_PROJECTION);
+            //glLoadIdentity();
+            //QMatrix4x4 projection;
+            //projection.perspective(45.0f, float(width()) / height(), 0.1f, 100.0f);
+
+            drawLocatedGLyphs(&(*it), this->width(), this->height());
+            ++iteration;
+
+            // don't iterate past end of vectors
+            if (it != allData.end())
+            {
+                //++classVec;
+            }
+        }
+
+        // Reset iterators for second pass through data
+        // A1
+/*
+        maxY = 0.0;
+        maxX = 0.0;
+        minX = 10.0;
+        minY = 10.0;
+*/
+        //glFlush();
+    }
+
+    glPopMatrix();
 }

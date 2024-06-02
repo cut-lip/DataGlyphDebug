@@ -1,14 +1,31 @@
 #include "oglutilities.h"
 
 //int DATA_SIZE = 683;
-int NUM_ROWS = 4;
-int NUM_COLUMNS = 4;
+unsigned int NUM_ROWS = 4;
+unsigned int NUM_COLUMNS = 4;
 float THRESHOLD_VALUE = 5.0;			/* threshold calculation value */
 float MIN_THRESHOLD =2.0;
+
+int VIEWPORT_SCALE = 8;
+const unsigned int HEIGHT_SCALE = 10;	/* height scaling constant */
+const unsigned int WIDTH_SCALE = 4;		/* width scaling constant */
+bool DYNAMIC_ANGLES = false;
+bool DOTTED_AXES = false;
+float GLYPH_SCALE_FACTOR = 0.25;
+bool ANGLE_FOCUS = true;
+bool BIRD_FOCUS = true;
+bool DRAW_AXES = false;
+float AXIS_LENGTH = 1.0;
+bool POS_ANGLE = false;
 
 bool HYPERBLOCKS_COLLECTED;
 std::vector< std::vector<GLfloat>> hyperblocks{};
 std::vector<std::string> hyperblockLabels{};
+
+std::vector<std::vector<GLfloat>> allData(683);
+std::vector<bool> dataClass(683);
+
+extern std::vector<std::vector<GLfloat>> allData;
 
 /*
 isClose
@@ -86,8 +103,6 @@ void mergerHyperblock(std::vector<std::vector<GLfloat>>* all_Data, std::vector<b
     // Debug
     std::cout << "\nallData size = " << allData.size();
 
-    bool addThis = false;   // Initialize flag & class counters
-
     int classACount = 0;
     int classBCount = 0;
 
@@ -103,7 +118,6 @@ void mergerHyperblock(std::vector<std::vector<GLfloat>>* all_Data, std::vector<b
         std::vector<bool>::iterator classIt = dataClassCopy.begin();
         std::vector<bool>::iterator threshIt = thresholds.begin();
 
-        addThis = false;	// reset add curr point flag
         // Use threshold values to remove points
         while (dataIt != allData.end())
         {
@@ -189,7 +203,7 @@ void mergerHyperblock(std::vector<std::vector<GLfloat>>* all_Data, std::vector<b
 *				endY	- max y values in plane
 *				dimension - dimensions of grid (dimension x dimension)
 * */
-void drawGridSPC(GLfloat originX, GLfloat originY, GLfloat endX, GLfloat endY, int dimension)
+void drawGridSPC(GLfloat originX, GLfloat originY, GLfloat endX, GLfloat endY, unsigned int dimension)
 {
     // ************** DRAW SPC GRID (dimension x dimension) ****************
     glPushMatrix();
@@ -231,7 +245,9 @@ int processData(QFile* dataFile, std::vector<std::vector<GLfloat>>* allData, std
     int count = 0;
     while (!in.atEnd()) {
         QString line = in.readLine();
-        int vecCount = 10;
+
+        //Unused variable
+        //int vecCount = 10;
 
         // Convert QString to string
         std::string lineString = line.toLocal8Bit().constData();
@@ -263,6 +279,8 @@ int processData(QFile* dataFile, std::vector<std::vector<GLfloat>>* allData, std
         (*allData)[count] = data;
         ++count;
     }
+
+    return 0;
 }
 
 int normalizeData(std::vector<std::vector<GLfloat>> *allData)
@@ -280,6 +298,8 @@ int normalizeData(std::vector<std::vector<GLfloat>> *allData)
         (*allData)[index] = normalData;
         ++index;
     }
+
+    return 0;
 }
 
 // Draw tile grid, set to size determined by
@@ -322,131 +342,6 @@ void drawGrid(float SCREEN_WIDTH, float SCREEN_HEIGHT)
     glPopMatrix();		// Pop a matrix from gl matrix stack
 }
 
-/*
-void drawGlyphs(std::vector<std::vector<GLfloat>> allData, int SCREEN_HEIGHT, int SCREEN_WIDTH)
-{
-    // Organization of Data for Glyph (10-D, CL replicated) =
-    //	{ SPC:[ (UC, CL), (BC, CL), (MG, BN) ] SF:[ UCShape, SE, NN, M ] }
-    // Construct glyph tool
-    SpcSfGlyph glyph = SpcSfGlyph();
-    // Construct turtle tool
-    TurtleG* turt = new TurtleG();
-    Point2* pos2 = new Point2();
-    Point2* pos3 = new Point2();
-
-    // Initialize data iterator
-    std::vector<std::vector<GLfloat>>::iterator it = allData.begin();
-
-    glPushMatrix();		// Scale and translate glyph
-
-    unsigned int rowNum = 0;	// Current Row index
-    unsigned int colNum = 0;	// Current Column index
-
-    while (rowNum < NUM_ROWS)		// Grid Rows loop
-    {
-        while (colNum < NUM_COLUMNS)	// Grid Columns loop
-        {
-            // If within threshold of current point,
-            // display glyph at current grid index
-            if (it != allData.end())
-            {
-                // Draw polygon outlines
-                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-                // Pointer to current data point
-                std::vector<GLfloat> processedData = *it;
-
-                // Encode angles with most meaningful attributes
-                std::vector<GLfloat> stickFig{};
-                // Populate: CL (angle), UC (length), BN (angle), BC (length)
-                stickFig.push_back(*processedData.begin());			// Angle 1
-                stickFig.push_back(*(processedData.begin() + 1));	// Length 1
-                stickFig.push_back(*(processedData.begin() + 5));	// Angle 2
-                stickFig.push_back(*(processedData.begin() + 6));	// Length 2
-
-                std::vector<GLfloat> axesSPC{};
-
-                // Populate: UCsh, MA, SIN, MA, NN, MIT
-                // (MA, UCsh) (MA, SIN) (MIT, NN)
-                axesSPC.push_back(*(processedData.begin() + 3));	// X1
-                axesSPC.push_back(*(processedData.begin() + 2));	// Y1
-                axesSPC.push_back(*(processedData.begin() + 3));	// X2
-                axesSPC.push_back(*(processedData.begin() + 4));	// Y2
-                axesSPC.push_back(*(processedData.begin() + 8));	// X3
-                axesSPC.push_back(*(processedData.begin() + 7));	// Y3
-
-                GLfloat maxAtr = 0.0;	// Initialize max attribute variable
-                // Check for max shift
-                for (std::vector<GLfloat>::iterator maxValIt = (*it).begin();
-                     maxValIt < (*it).begin() + 6; ++maxValIt)
-                {
-                    maxAtr = std::max(maxAtr, *maxValIt);
-                }
-
-                glViewport(		// (rowNum x colNum)
-                    // Encode shift based off of first SPC axis horizontal/vertical shift.
-                    // Shift calculation:
-                    // the LARGER the value, the SMALLER the shift
-                    // maybe just subtract attribute value from (SCREEN_WIDTH / NUM_COLUMNS) / 2)
-                    ((SCREEN_WIDTH / NUM_COLUMNS) * (colNum)),// - (maxAtr * ((SCREEN_WIDTH / NUM_COLUMNS) / 2)),
-                    ((SCREEN_HEIGHT / NUM_ROWS) * (rowNum)),// - (maxAtr * ((SCREEN_HEIGHT / NUM_ROWS) / 2)),
-                    (SCREEN_WIDTH / NUM_COLUMNS),// * (1.0 + (maxAtr / 2)),
-                    (SCREEN_HEIGHT / NUM_ROWS)// * (1.0 + (maxAtr / 2))
-                    );
-
-                glPushMatrix();		// Push new matrix
-                glMatrixMode(GL_PROJECTION);
-                glLineWidth(4.0);	// Line width = 4.0
-                // Translate glyph based on value of first SPC x-coordinate
-                glTranslatef(-(1.0 - *(processedData.begin() + 3)), 0.0, 0.0);
-
-                float colors[6];
-                // *********************** DRAW STICK FIGURE ***********************
-                glyph.drawGlyphSF(pos2, pos3, stickFig.begin(), true, *turt, true, true,
-                                  GLYPH_SCALE_FACTOR, SF_SEGMENT_CONSTANT, SF_ANGLE_SCALE, true, false, colors);
-
-                // RESET THE CP AND CD
-                turt->setCP(0.0, 0.0);
-
-                // *********************** DRAW SPC AXES ***********************
-                if (false)
-                {
-                    glLineWidth(2.0);	// Line width = 2.0
-                    glyph.drawAxesSPC(*pos2, *pos3, axesSPC.begin(),
-                                      1, 0.25, false);
-                }
-
-                glPopMatrix();	// Pop from gl matrix stack
-                ++colNum;		// Increment column index
-            }
-
-            if (it == allData.end())
-            {	// If at end of data, set loop exit conditions
-                colNum = NUM_COLUMNS;
-                rowNum = NUM_ROWS;
-            }
-            else
-            {	// Otherwise increment iterators
-                ++it;
-            }
-        }
-
-        // If exit conditions have not been met
-        if (rowNum != NUM_ROWS)
-        {
-            colNum = 0;		// Reset column index
-            ++rowNum;		// Increment row index
-        }
-    }
-
-    // Draw filled polygons
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-    // Return to original modelview matrix
-    glPopMatrix();
-}
-*/
-
 void drawArrow(Point2 start, Point2 end, const unsigned int winHeight)
 {
     // Draw Line Segment
@@ -479,8 +374,9 @@ void drawArrow(Point2 start, Point2 end, const unsigned int winHeight)
 }
 
 
-void drawLocatedGLyphs(std::vector<GLfloat>* normalData, bool classify, int size, int iteration, std::string hbLabel, std::string hbLabel2) {
-    // encode colors to bird glyph winds in located glyphs
+void drawLocatedGLyphs(std::vector<GLfloat>* normalData, int width, int height) {
+
+    // encode colors to bird glyph wings in located glyphs
     float colors[6];
     colors[0] = *(normalData->begin() + 4);
     colors[1] = *(normalData->begin() + 5);
@@ -488,7 +384,6 @@ void drawLocatedGLyphs(std::vector<GLfloat>* normalData, bool classify, int size
     colors[3] = *(normalData->begin() + 2);
     colors[4] = *(normalData->begin() + 7);
     colors[5] = *(normalData->begin() + 5);
-
     // If color values too high, round down so still visible
     for (unsigned int i = 0; i < 6; i++)
     {
@@ -497,24 +392,11 @@ void drawLocatedGLyphs(std::vector<GLfloat>* normalData, bool classify, int size
             colors[i] = colors[i] - 0.1;
         }
     }
-
-    glPushMatrix();
-
-    // Encode custom attributes to SPC positions
-    GLfloat ucsize = *(normalData->begin() + 1);
-
-    // Uniformity of cell size
-    GLfloat ucshape = *(normalData->begin() + 2);
-
-    // Clump thickness
-    GLfloat cl = *(normalData->begin());
-
-    // Bland chromatin
-    GLfloat bn = *(normalData->begin() + 5);
-
-    // Marginal adhesion
-    GLfloat bc = *(normalData->begin() + 6);
-
+    GLfloat ucsize = *(normalData->begin() + 1);        // Encode custom attributes to SPC positions
+    GLfloat ucshape = *(normalData->begin() + 2);       // Uniformity of cell shape
+    GLfloat cl = *(normalData->begin());                // Clump thickness
+    GLfloat bn = *(normalData->begin() + 5);            // Bland chromatin
+    GLfloat bc = *(normalData->begin() + 6);            // Marginal adhesion
     std::vector<GLfloat> axesSPC{};
     axesSPC.push_back(*((normalData)->begin() + 3));	// X1
     axesSPC.push_back(*((normalData)->begin() + 2));	// Y1
@@ -529,7 +411,6 @@ void drawLocatedGLyphs(std::vector<GLfloat>* normalData, bool classify, int size
     stickFig.push_back(*((normalData)->begin() + 1));	// Length 1
     stickFig.push_back(*((normalData)->begin() + 2));	// Angle 2
     stickFig.push_back(*((normalData)->begin() + 3));	// Length 2
-
     // Arrange greater SPC position attributes from optimal positioning described in Worland, Wagle, and Kovalerchuk
     std::vector<GLfloat> position{ cl, bn, ucsize, bc, bn, ucshape };
     //std::vector<GLfloat> position{ uc, bn, bc, cl, bn, mg };
@@ -539,21 +420,29 @@ void drawLocatedGLyphs(std::vector<GLfloat>* normalData, bool classify, int size
     SpcSfGlyph glyph = SpcSfGlyph();
     // Construct turtle tool
     TurtleG* turt = new TurtleG();
-
     Point2* pos2 = new Point2();
     Point2* pos3 = new Point2();
 
+    glPushMatrix();
+
         // DANGER DANGER!!!!!!!!
     // Locate the lower-left corner of viewport for glyph drawing
-    GLfloat x1 = ((SCREEN_WIDTH / WIDTH_SCALE) * *positionIt) - ((GLint)SCREEN_WIDTH / (VIEWPORT_SCALE * 2));
-    GLfloat y1 = ((SCREEN_HEIGHT - (SCREEN_HEIGHT / HEIGHT_SCALE)) * *++positionIt) - ((GLint)SCREEN_WIDTH / (VIEWPORT_SCALE * 2));
+    GLfloat x1 = ((width / WIDTH_SCALE) * *positionIt) - ((GLint)width / (VIEWPORT_SCALE * 2));
+    GLfloat y1 = ((height - (height / HEIGHT_SCALE)) * *++positionIt) - ((GLint)width / (VIEWPORT_SCALE * 2));
 
-    glPushMatrix();
+    // Locate the viewport for glyph drawing
+    glViewport(
+        x1,
+        y1,
+        width / VIEWPORT_SCALE,
+        width / VIEWPORT_SCALE
+        );
+
 
     //Glyph1
     glLineWidth(4.0);
 
-    glyph.drawGlyphSF(pos2, pos3, stickFig.begin(), classify, *turt, DYNAMIC_ANGLES, POS_ANGLE, GLYPH_SCALE_FACTOR, 0.1, 2.0, ANGLE_FOCUS, BIRD_FOCUS, colors);
+    glyph.drawGlyphSF(pos2, pos3, stickFig.begin(), true, *turt, DYNAMIC_ANGLES, POS_ANGLE, GLYPH_SCALE_FACTOR, 5, 2.0, ANGLE_FOCUS, BIRD_FOCUS, colors);
     // RESET THE CP AND CD
     turt->setCP(0.0, 0.0);
     // *********************** DRAW SPC AXES ***********************
@@ -564,42 +453,44 @@ void drawLocatedGLyphs(std::vector<GLfloat>* normalData, bool classify, int size
     }
 
     // Locate the viewport for glyph drawing
-    GLfloat x2 = ((SCREEN_WIDTH / WIDTH_SCALE) * *++positionIt) + (SCREEN_WIDTH / 3) - ((GLint)SCREEN_WIDTH / (VIEWPORT_SCALE * 2));
-    GLfloat y2 = ((SCREEN_HEIGHT - (SCREEN_HEIGHT / HEIGHT_SCALE)) * *++positionIt) - ((GLint)SCREEN_WIDTH / (VIEWPORT_SCALE * 2));
+    GLfloat x2 = ((width / WIDTH_SCALE) * *++positionIt) + (width / 3) - ((GLint)width / (VIEWPORT_SCALE * 2));
+    GLfloat y2 = ((height - (height / HEIGHT_SCALE)) * *++positionIt) - ((GLint)width / (VIEWPORT_SCALE * 2));
 
     // Locate the viewport for glyph drawing
     glViewport(
         x2,
         y2,
-        SCREEN_WIDTH / VIEWPORT_SCALE,
-        SCREEN_WIDTH / VIEWPORT_SCALE
+        width / VIEWPORT_SCALE,
+        width / VIEWPORT_SCALE
         );
 
     //Glyph2
     glLineWidth(4.0);
-    glyph.drawGlyphSF(pos2, pos3, stickFig.begin(), classify, *turt, DYNAMIC_ANGLES, POS_ANGLE, 0.25, 0.1, 2.0, ANGLE_FOCUS, BIRD_FOCUS, colors);
+    glyph.drawGlyphSF(pos2, pos3, stickFig.begin(), true, *turt, DYNAMIC_ANGLES, POS_ANGLE, 0.25, 5, 2.0, ANGLE_FOCUS, BIRD_FOCUS, colors);
     // RESET THE CP AND CD
     turt->setCP(0.0, 0.0);
 
-    glLineWidth(2.0);
-    glyph.drawAxesSPC(*pos2, *pos3, axesSPC.begin(), AXIS_LENGTH, 0.25, DOTTED_AXES);
+    if (DRAW_AXES) {
+        glLineWidth(2.0);
+        glyph.drawAxesSPC(*pos2, *pos3, axesSPC.begin(), AXIS_LENGTH, 0.25, DOTTED_AXES);
+    }
 
     // Locate the viewport for glyph drawing
-    GLfloat x3 = ((SCREEN_WIDTH / WIDTH_SCALE) * *++positionIt) + (((2 * SCREEN_WIDTH) / 3)) - ((GLint)SCREEN_WIDTH / (VIEWPORT_SCALE * 2));
-    GLfloat y3 = ((SCREEN_HEIGHT - (SCREEN_HEIGHT / HEIGHT_SCALE)) * *++positionIt) - ((GLint)SCREEN_WIDTH / (VIEWPORT_SCALE * 2));
+    GLfloat x3 = ((width / WIDTH_SCALE) * *++positionIt) + (((2 * width) / 3)) - ((GLint)width / (VIEWPORT_SCALE * 2));
+    GLfloat y3 = ((height - (height / HEIGHT_SCALE)) * *++positionIt) - ((GLint)width / (VIEWPORT_SCALE * 2));
 
     // Locate the viewport for glyph drawing
     glViewport(
         x3,
         y3,
-        SCREEN_WIDTH / VIEWPORT_SCALE,
-        SCREEN_WIDTH / VIEWPORT_SCALE
+        width / VIEWPORT_SCALE,
+        width / VIEWPORT_SCALE
         );
 
 
     //Glyph3
     glLineWidth(4.0);
-    glyph.drawGlyphSF(pos2, pos3, stickFig.begin(), classify, *turt, DYNAMIC_ANGLES, POS_ANGLE, 0.25, 0.1, 2.0, ANGLE_FOCUS, BIRD_FOCUS, colors);
+    glyph.drawGlyphSF(pos2, pos3, stickFig.begin(), true, *turt, DYNAMIC_ANGLES, POS_ANGLE, 0.25, 5, 2.0, ANGLE_FOCUS, BIRD_FOCUS, colors);
     // RESET THE CP AND CD
     turt->setCP(0.0, 0.0);
     // *********************** DRAW SPC AXES ***********************
@@ -608,4 +499,5 @@ void drawLocatedGLyphs(std::vector<GLfloat>* normalData, bool classify, int size
         glLineWidth(2.0);
         glyph.drawAxesSPC(*pos2, *pos3, axesSPC.begin(), AXIS_LENGTH, 0.25, DOTTED_AXES);
     }
+    glPopMatrix();
 }

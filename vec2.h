@@ -53,7 +53,6 @@ public:
     }
 
     Vec2 operator*(const GLint c) {     // Overload * Operator for * by Constants
-        float constant = float(c);
         return Vec2(this->x * c, this->y * c);
     }
 

@@ -9,8 +9,8 @@ std::vector<std::vector<GLfloat>>::iterator it;
 std::vector<std::vector<GLfloat>>::iterator hyperIt;
 
 std::vector<std::vector<GLfloat>> allDataPreNormalize(DATA_SIZE);
-std::vector<std::vector<GLfloat>> allData(DATA_SIZE);
-std::vector<bool> dataClass(DATA_SIZE);
+extern std::vector<std::vector<GLfloat>> allData;
+extern std::vector<bool> dataClass;
 
 // Declare the global variable defined in oglutilities.cpp
 extern std::vector<std::vector<GLfloat>> hyperblocks;
@@ -137,9 +137,6 @@ void OGLWidgetGrid::paintGL()
             glViewport(viewportX, viewportY, viewportWidth, viewportHeight);
 
                 if (!hyperblocks.empty()) {
-
-
-
                     int repCount = 0;
                     bool DYNAMIC_ANGLES = false;
                     bool POS_ANGLE = false;
@@ -221,10 +218,6 @@ void OGLWidgetGrid::paintGL()
                     glyph.drawAxesSPC(*pos2, *pos3, axesSPC.begin(),
                                       AXIS_LENGTH, 0.25, DOTTED_AXES);
 
-
-
-
-
                     // Disable blending and resume depth mask
                     glDepthMask(GL_TRUE);
                     glDisable(GL_BLEND);
@@ -237,17 +230,6 @@ void OGLWidgetGrid::paintGL()
                     glPopMatrix();
                     glPopMatrix();
 
-
-
-/*
-                    // Example, draw line strip
-                    glLineWidth(4.0);
-                    glBegin(GL_LINE_STRIP);
-                    glVertex2f(hyperblocks[dataCount][1]*2, hyperblocks[dataCount][2]*2);  // Bottom left vertex
-                    glVertex2f(hyperblocks[dataCount][3]*2, hyperblocks[dataCount][4]*2);  // Bottom right vertex
-                    glVertex2f(hyperblocks[dataCount][5]*2, hyperblocks[dataCount][6]*2);  // Top vertex
-                    glEnd();
-*/
                 }
                 else if (!allData[0].empty()) {
                     int repCount = 0;
@@ -318,7 +300,6 @@ void OGLWidgetGrid::paintGL()
                     glDepthMask(GL_FALSE);	// Disable depth masking
 
                     // *********************** DRAW STICK FIGURE ***********************
-                    //A2
                     // Draw representative glyphs in color, Draw other glyphs in grey, if selected
 
                     glyph.drawGlyphSF(pos2, pos3, stickFig.begin(), *classIt, *turt, DYNAMIC_ANGLES, POS_ANGLE,
@@ -330,10 +311,6 @@ void OGLWidgetGrid::paintGL()
                     glLineWidth(2.0);	// Line width = 2.0
                     glyph.drawAxesSPC(*pos2, *pos3, axesSPC.begin(),
                                       AXIS_LENGTH, 0.25, DOTTED_AXES);
-
-
-
-
 
                     // Disable blending and resume depth mask
                     glDepthMask(GL_TRUE);
@@ -347,15 +324,6 @@ void OGLWidgetGrid::paintGL()
                     glPopMatrix();
                     glPopMatrix();
 
-/*
-                    // Example, draw line strip
-                    glLineWidth(4.0);
-                    glBegin(GL_LINE_STRIP);
-                    glVertex2f(allData[dataCount][1]*2, allData[dataCount][2]*2);  // Bottom left vertex
-                    glVertex2f(allData[dataCount][3]*2, allData[dataCount][4]*2);  // Bottom right vertex
-                    glVertex2f(allData[dataCount][5]*2, allData[dataCount][6]*2);  // Top vertex
-                    glEnd();
-*/
                 } else {
                     // Example, draw line strip
                     glLineWidth(4.0);
@@ -500,4 +468,3 @@ void MainWindow::on_hyperblock_button_clicked()
     std::cout << "\n" << hyperblocks.size() <<"\n";
     std::cout << "\nHello there\n";
 }
-
