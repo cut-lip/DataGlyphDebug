@@ -95,38 +95,19 @@ void OGLWidgetSPC::paintGL() {
 
 
     if (!allData[0].empty()) {
-
         int iteration = 1;
         // Display points within threshold
         // Pass through twice: Draw classes sequentially depending on CLASS_SEPERATION_MODE flag
         for (std::vector<std::vector<GLfloat>>::iterator it = (allData.begin());
              it < allData.end(); ++it)
         {
-            // Set the viewport to the entire widget
-            //glViewport(0, 0, width(), height()/2);
-
-            //DEBUGG
-            std::cout << "Hello STPPPPPSJNFES" << std::endl;
-
-            glBegin(GL_LINE_LOOP);
-            glVertex2f(0, 0);
-            glVertex2f(200, 200);
-            glEnd();
-
-
-            //glMatrixMode(GL_PROJECTION);
-            //glLoadIdentity();
-            //QMatrix4x4 projection;
-            //projection.perspective(45.0f, float(width()) / height(), 0.1f, 100.0f);
+            glMatrixMode(GL_PROJECTION);
+            glLoadIdentity();
+            QMatrix4x4 projection;
+            projection.perspective(45.0f, float(width()) / height(), 0.1f, 100.0f);
 
             drawLocatedGLyphs(&(*it), this->width(), this->height());
             ++iteration;
-
-            // don't iterate past end of vectors
-            if (it != allData.end())
-            {
-                //++classVec;
-            }
         }
 
         // Reset iterators for second pass through data
