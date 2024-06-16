@@ -504,4 +504,28 @@ void drawLocatedGLyphs(std::vector<GLfloat>* normalData, int width, int height) 
         glyph.drawAxesSPC(*pos2, *pos3, axesSPC.begin(), AXIS_LENGTH, 0.25, DOTTED_AXES);
     }
     glPopMatrix();
+    // Set the viewport to the entire widget
+    //glViewport(0, 0, width, height);
+    glColor3f(0.7, 0.0, 0.7);
+    glLineWidth(3.0);
+    glPushMatrix();	// Push new modelview matrix for translation
+    //glTranslatef(-((GLint)width / (VIEWPORT_SCALE * 2)), -((GLint)width / (VIEWPORT_SCALE * 2)), 0);
+
+    // Draw first edge
+    glBegin(GL_LINES);
+    glVertex2f(x1, y1);
+    glVertex2f(x2, y2);
+    glEnd();
+
+    // Draw a point at the node between connections
+    glPointSize(6.0);
+    glBegin(GL_POINTS);
+    glVertex2f(x2 + (width / VIEWPORT_SCALE), y2 + (width / VIEWPORT_SCALE));
+    glEnd();
+
+    // Draw second edge
+    drawArrow(Point2(x2 + (width / VIEWPORT_SCALE), y2 + (width / VIEWPORT_SCALE)),
+              Point2(x3 + (width / VIEWPORT_SCALE), y3 + (width / VIEWPORT_SCALE)), (2 * (height / 3)));
+
+    glPopMatrix(); // Pop modelview matrix used for translation
 }
