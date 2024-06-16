@@ -23,6 +23,8 @@
 #include "oglwidgetspc.h"
 #include "vec2.h"
 #include "point2.h"
+#include "turtleg.h"
+#include "SPC_SF.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }

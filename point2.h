@@ -1,4 +1,5 @@
 #pragma once
+#include <QOpenGLFunctions>
 //#include "GL/glut.h"
 
 // Point2 subclass
@@ -20,8 +21,8 @@ public:
         this->y = y;
     }
 
-    GLfloat setx(GLfloat x) { this->x = x; }
-    GLfloat sety(GLfloat y) { this->y = y; }
+    void setx(GLfloat x) { this->x = x; }
+    void sety(GLfloat y) { this->y = y; }
 
     GLfloat getx() { return this->x; }
     GLfloat gety() { return this->y; }

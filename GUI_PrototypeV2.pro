@@ -24,7 +24,8 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     oglutilities.cpp \
-    oglwidgetspc.cpp
+    oglwidgetspc.cpp \
+    turtleg.cpp
 
 # Specify the header files
 HEADERS += \

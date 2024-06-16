@@ -17,8 +17,9 @@
 #include <QOpenGLFunctions>
 #include "point2.h"
 #include "vec2.h"
+#include "SPC_SF.h"
 
-
+// Add namespace
 
 // Import data from CVS file
 int processData(QFile* dataFile, std::vector<std::vector<GLfloat>>* allData, std::vector<bool>* classify);
@@ -30,12 +31,14 @@ void drawGrid(float width, float height);
 
 void drawArrow(Point2 start, Point2 end, const unsigned int winHeight);
 
-void drawGridSPC(GLfloat originX, GLfloat originY, GLfloat endX, GLfloat endY, int dimension);
+void drawGridSPC(GLfloat originX, GLfloat originY, GLfloat endX, GLfloat endY, unsigned int dimension);
 
 void mergerHyperblock(std::vector<std::vector<GLfloat>>* all_Data, std::vector<bool> *classify);
 
 std::vector<bool> computeAllDistances(std::vector<GLfloat>* curr, std::vector<std::vector<GLfloat>>* data);
 
 bool isClose(std::vector<float>* vec1, std::vector<float>* vec2);
+
+void drawLocatedGLyphs(std::vector<GLfloat>* normalData, int width, int height);
 
 #endif // OGLUTILITIES_H

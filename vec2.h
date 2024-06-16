@@ -1,5 +1,6 @@
 #pragma once
 #include <math.h>
+#include <QOpenGLFunctions>
 //#include "GL/glut.h"
 
 // A 2-D vector
@@ -52,7 +53,6 @@ public:
     }
 
     Vec2 operator*(const GLint c) {     // Overload * Operator for * by Constants
-        float constant = float(c);
         return Vec2(this->x * c, this->y * c);
     }
 
